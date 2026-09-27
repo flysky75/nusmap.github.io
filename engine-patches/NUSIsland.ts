@@ -36,9 +36,10 @@ export default class NUSIsland {
   ctx.save();ctx.clip(path,'evenodd');
   const gradient=ctx.createLinearGradient(0,0,0,h);gradient.addColorStop(0,'#194f81');gradient.addColorStop(1,'#297bb4');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
   ctx.beginPath();
-  for(const hex of this.hexes){const ps=hex.map(p=>project(p,0));if(ps.some(p=>p[2]<=0||p[2]>=1)||ps.every(p=>p[0]<-80||p[0]>w+80||p[1]<-80||p[1]>h+80))continue;ps.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();}
+  for(const hex of this.hexes){const center=project([(hex[0][0]+hex[3][0])/2,(hex[0][1]+hex[3][1])/2],0);if(center[2]<=0||center[2]>=1||center[0]<-250||center[0]>w+250||center[1]<-250||center[1]>h+250)continue;const ps=hex.map(p=>project(p,0));if(ps.some(p=>p[2]<=0||p[2]>=1)||ps.every(p=>p[0]<-80||p[0]>w+80||p[1]<-80||p[1]>h+80))continue;ps.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();}
   ctx.strokeStyle='#55b9ee';ctx.lineWidth=1.2;ctx.shadowColor='#64ceff';ctx.shadowBlur=5;ctx.stroke();ctx.restore();
   for(const ring of rings){if(ring.some(p=>p[2]>=1))continue;ctx.beginPath();ring.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.shadowColor='#3bdbff';ctx.shadowBlur=16;ctx.strokeStyle='#63e8ff';ctx.lineWidth=4;ctx.stroke();ctx.shadowBlur=6;ctx.strokeStyle='#eaffff';ctx.lineWidth=1.5;ctx.stroke();}ctx.shadowBlur=0;
  }
 }
+
 

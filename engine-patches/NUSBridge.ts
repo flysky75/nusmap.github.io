@@ -10,7 +10,7 @@ import Vec3 from '~/lib/math/Vec3';
 export default class NUSBridge {
  private points: {id: string; lng: number; lat: number}[] = [];
  private ready = false; private island = new NUSIsland();
- private last = 0;
+ private last = 0; private islandState = "";
  private buildings: any[] = [];
  public constructor(private manager: SystemManager) {
   window.addEventListener('message', event => {
@@ -42,17 +42,22 @@ export default class NUSBridge {
  }
  public update(): void {
   const scene=this.manager.getSystem(SceneSystem),controls=this.manager.getSystem(ControlsSystem);
-  if(!scene?.objects || !controls || performance.now()-this.last<50)return;
-  this.last=performance.now();
+  if(!scene?.objects || !controls)return;
+  
   if(!this.ready){this.ready=true;this.manager.getSystem(MapTimeSystem).setState(2);parent.postMessage({channel:'nus-map',event:'ready'},location.origin);}
   const {wrapper,camera}=scene.objects;
   const terrain=this.manager.getSystem(TerrainSystem).terrainHeightProvider;
-  this.island.update(scene,terrain);
+  const state=controls.getCurrentStateHash();
+  if(state!==this.islandState || performance.now()-this.last>1000){this.island.update(scene,terrain);this.islandState=state;this.last=performance.now();}
   const points=this.points.map(p=>{const q=MathUtils.degrees2meters(p.lat,p.lng),height=terrain.getHeightGlobalInterpolated(q.x,q.y,true)||0;
    const v=Vec3.project(new Vec3(q.x+wrapper.position.x,height+4,q.y+wrapper.position.z),camera);
    return {id:p.id,x:(v.x+1)*innerWidth/2,y:(1-v.y)*innerHeight/2,visible:v.z>-1&&v.z<1&&Math.abs(v.x)<1.15&&Math.abs(v.y)<1.15};
   });
-  parent.postMessage({channel:'nus-map',event:'frame',points,state:controls.getCurrentStateHash()},location.origin);
+  // Update parent pins synchronously before this render frame is presented.
+  const sink=(window as any).__nusFrameSink;
+  if(sink)sink(points);
+  else parent.postMessage({channel:'nus-map',event:'frame',points,state},location.origin);
  }
 }
+
 
