@@ -1,0 +1,39 @@
+/* Real backdrop transparency: the live map remains visible through the glass. */
+#search-overlay{filter:none}
+#detail,#search-panel{
+ background:radial-gradient(ellipse at 12% 0%,rgba(28,143,212,.22),transparent 48%),linear-gradient(135deg,rgba(6,43,78,.61),rgba(1,18,39,.74) 60%,rgba(8,65,95,.53));
+ -webkit-backdrop-filter:blur(17px) saturate(145%);
+ backdrop-filter:blur(17px) saturate(145%);
+ border:1px solid rgba(66,205,255,.76);
+ box-shadow:inset 0 1px 1px rgba(178,233,255,.32),inset 1px 0 12px rgba(38,158,222,.1),inset 0 -10px 28px rgba(37,179,219,.12),0 0 15px rgba(0,149,223,.17),0 16px 45px rgba(0,6,22,.42);
+}
+#detail .energy-panel{
+ background:linear-gradient(145deg,rgba(0,33,52,.48),rgba(0,12,27,.64));
+ border:1px solid rgba(34,182,225,.65);
+ box-shadow:inset 0 1px 1px rgba(103,225,249,.14),inset 0 0 22px rgba(0,47,88,.18);
+ -webkit-backdrop-filter:blur(5px) saturate(115%);
+ backdrop-filter:blur(5px) saturate(115%);
+}
+.searchbox,.energy-badge,.campus-switch,.view-switch,.map-tools>button,.map-tools>div,.about-map{
+ background:linear-gradient(130deg,rgba(8,57,98,.65),rgba(2,22,48,.6));
+ -webkit-backdrop-filter:blur(17px) saturate(145%);
+ backdrop-filter:blur(17px) saturate(145%);
+ border-color:rgba(48,188,244,.7);
+ box-shadow:inset 0 1px 1px rgba(156,224,255,.26),inset 0 0 16px rgba(25,152,209,.1),0 5px 20px rgba(0,9,26,.35);
+}
+.map-tools>div button{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+.chip{background:rgba(7,37,65,.52)}
+.chip.active{background:rgba(6,101,150,.76)}
+.place-row:hover,.place-row.selected{background:rgba(20,64,102,.65)}
+.place-icon{background:rgba(3,59,67,.65)}
+#detail .save-button{background:rgba(3,28,53,.45)}
+#detail h2,#detail .energy-value{color:#f2fbff}
+#detail p,.detail-note{color:#badff2}
+.energy-panel dl{border-bottom-color:rgba(71,138,180,.2)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ #detail,#search-panel,.searchbox,.energy-badge,.campus-switch,.view-switch,.map-tools>button,.map-tools>div,.about-map{background:linear-gradient(135deg,#0b3454,#04182e)}
+}
+@media(prefers-reduced-transparency:reduce){
+ #detail,#search-panel,.searchbox,.energy-badge,.campus-switch,.view-switch,.map-tools>button,.map-tools>div,.about-map{background:#082741;-webkit-backdrop-filter:none;backdrop-filter:none}
+ #detail .energy-panel{background:#031b2e;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
