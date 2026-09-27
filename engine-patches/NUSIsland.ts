@@ -25,9 +25,14 @@ export default class NUSIsland {
   ctx.clearRect(0,0,w,h);
   const {camera,wrapper}=scene.objects;
   const project=(p:number[],height:number)=>{const v=Vec3.project(new Vec3(p[0]+wrapper.position.x,height,p[1]+wrapper.position.z),camera);return [(v.x+1)*w/2,(1-v.y)*h/2,v.z]};
-  const rings=this.rings.map(r=>r.map(p=>project(p,(terrain.getHeightGlobalInterpolated(p[0],p[1],true)||0)+2)));
+  const rings=this.rings.map(r=>{
+   const source=r.map(p=>Vec3.applyMatrix4(new Vec3(p[0]+wrapper.position.x,(terrain.getHeightGlobalInterpolated(p[0],p[1],true)||0)+2,p[1]+wrapper.position.z),camera.matrixWorldInverse));
+   const clipped:Vec3[]=[];
+   for(let i=0;i<source.length;i++){const a=source[i],b=source[(i+1)%source.length],ai=a.z<=-1,bi=b.z<=-1;if(ai)clipped.push(a);if(ai!==bi){const t=(-1-a.z)/(b.z-a.z);clipped.push(new Vec3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,-1));}}
+   return clipped.map(p=>{const v=Vec3.applyMatrix4(p,camera.projectionMatrix);return [(v.x+1)*w/2,(1-v.y)*h/2,v.z]});
+  });
   const path=new Path2D();path.rect(0,0,w,h);
-  for(const ring of rings){if(ring.some(p=>p[2]>=1))continue;ring.forEach((p,i)=>i?path.lineTo(p[0],p[1]):path.moveTo(p[0],p[1]));path.closePath();}
+  for(const ring of rings){if(ring.length<3)continue;ring.forEach((p,i)=>i?path.lineTo(p[0],p[1]):path.moveTo(p[0],p[1]));path.closePath();}
   ctx.save();ctx.clip(path,'evenodd');
   const gradient=ctx.createLinearGradient(0,0,0,h);gradient.addColorStop(0,'#194f81');gradient.addColorStop(1,'#297bb4');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
   ctx.beginPath();
