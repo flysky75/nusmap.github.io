@@ -2,6 +2,8 @@ class StreetsMap {
  constructor(){
   this.ready=false;this.markers=new Set();this.pending=[];this.sequence=0;
   this.container=document.querySelector('#map');this.frame=document.createElement('iframe');
+  // Map pointer events occur in a separate document and do not bubble to the page.
+  this.frame.addEventListener('load',()=>{this.frame.contentDocument?.addEventListener('pointerdown',()=>this.onInteract?.(),{capture:true});});
   this.frame.title='Streets GL campus map';this.frame.src='streets/index.html?v=pages-paths-2#1.29800,103.77600,45,342,1600';
   Object.assign(this.frame.style,{position:'absolute',inset:'0',width:'100%',height:'100%',border:'0'});this.container.append(this.frame);
   const attribution=document.createElement('div');attribution.className='maplibregl-ctrl-attrib';Object.assign(attribution.style,{position:'absolute',bottom:'0',right:'0',zIndex:2,fontSize:'11px',padding:'2px 6px'});
@@ -25,5 +27,6 @@ class StreetsMarker {
  constructor(options){this.element=options.element||document.createElement('span');if(!options.element){this.element.textContent='●';this.element.style.color=options.color||'#237bdb'}this.element.classList.add('maplibregl-marker');Object.assign(this.element.style,{position:'absolute',left:'0',top:'0',zIndex:2,display:'none'});}
  setLngLat(p){this.lnglat=p;return this} addTo(map){this.map=map;this.id='pin-'+map.sequence++;map.markers.add(this);map.container.append(this.element);map.sync();return this} remove(){this.element.remove();this.map?.markers.delete(this);this.map?.sync()}
 }
+
 
 

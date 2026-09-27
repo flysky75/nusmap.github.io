@@ -17,6 +17,7 @@ $('#categories').innerHTML=filterNames.map(([v,i,label])=>`<button class="chip $
 function openSearch(){ $('#search-panel').hidden=false; $('#search').setAttribute('aria-expanded','true') }
 function closeSearch(){ $('#search-panel').hidden=true; $('#search').setAttribute('aria-expanded','false') }
 $('#search').onfocus=openSearch;
+$('#search').onclick=openSearch;
 $('#search').oninput=()=>{openSearch();render()};
 document.addEventListener('pointerdown',e=>{if(!$('#search-overlay').contains(e.target))closeSearch()});
 $('#search-overlay').addEventListener('focusout',()=>setTimeout(()=>{if(!$('#search-overlay').contains(document.activeElement))closeSearch()},0));
@@ -33,8 +34,10 @@ function energyPanel(p){
  let hash=2166136261;for(const ch of p.buildingId){hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0}const total=8500+hash%218000;const daily=Math.round(total/30);return `<section class="energy-panel" aria-label="Demo building energy consumption"><div class="energy-heading"><span>ϟ</span> Total energy consumption <b class="demo-label">DEMO</b></div><div class="energy-value">${total.toLocaleString('en-SG')} <span>kWh</span></div><div class="energy-disconnected">September 2026 · Sample month</div><dl><div><dt>Daily average</dt><dd>${daily.toLocaleString('en-SG')} kWh</dd></div><div><dt>Data source</dt><dd>Simulated dataset</dd></div></dl><p>Illustrative demo only. Not actual NUS energy consumption.</p></section>`}
 const campusReady=Promise.all(['places.json','buildings.geojson','campus-boundaries.geojson','building-details.geojson','trees.geojson'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error(url);return r.json()}))).then(([data,buildings,bounds,details,trees])=>{buildingData=buildings;places=data.map(p=>{const b=buildings.features.find(f=>pointInRing([p.lng,p.lat],f.geometry.coordinates[0]));return b?{...p,buildingId:b.properties.id}:p});for(const b of buildings.features){if(!places.some(p=>p.buildingId===b.properties.id && p.name.toLowerCase()===b.properties.name.toLowerCase()))places.push({id:b.properties.id,buildingId:b.properties.id,name:b.properties.name==='NUS building'?`NUS building · ${b.properties.id.replace('osm-','')}`:b.properties.name,lng:b.properties.lng,lat:b.properties.lat,category:'Places',campus:'NUS',address:'NUS campus',alias:b.properties.id})}dataReady=true;render();return {buildings,bounds,details,trees}}).catch(e=>{$('#results').innerHTML='<div class="empty">Campus data could not load. Refresh to retry.</div>';$('#map-status').textContent='Campus building data is unavailable. Refresh to retry.';throw e});
 map=new StreetsMap();
+map.onInteract=closeSearch;
 map.onReady=()=>{$('#map-status').textContent='Loading campus buildings…';campusReady.then(({buildings})=>map.send({action:'buildings',features:buildings.features}));render()};
 map.onBuilding=(id)=>{const bid='osm-'+id;const p=places.find(p=>p.buildingId===bid)||places.find(p=>p.id===bid);if(p)showPlace(p);else toast('No campus energy record is linked to this building.')};
 campusReady.then(()=>render());
 setTimeout(()=>{if(!map.ready)$('#map-status').textContent='Loading Streets GL textures and terrain…'},10000);
+
 
