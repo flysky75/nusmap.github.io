@@ -9,7 +9,7 @@ export default class NUSIsland {
  constructor(){
   Object.assign(this.canvas.style,{position:'absolute',inset:'0',width:'100%',height:'100%',pointerEvents:'none',zIndex:'1'});
   document.body.append(this.canvas);
-  fetch('/campus-boundaries.geojson').then(r=>r.json()).then(data=>{
+  fetch('../campus-boundaries.geojson').then(r=>r.json()).then(data=>{
    this.rings=data.features.flatMap((f:any)=>f.geometry.type==='Polygon'?[f.geometry.coordinates[0]]:f.geometry.coordinates.map((p:any)=>p[0])).map((r:number[][])=>r.map(p=>{const q=MathUtils.degrees2meters(p[1],p[0]);return [q.x,q.y]}));
   });
   const center=MathUtils.degrees2meters(1.298,103.776),s=32;
@@ -41,3 +41,4 @@ export default class NUSIsland {
   for(const ring of rings){if(ring.some(p=>p[2]>=1))continue;ctx.beginPath();ring.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.shadowColor='#3bdbff';ctx.shadowBlur=16;ctx.strokeStyle='#63e8ff';ctx.lineWidth=4;ctx.stroke();ctx.shadowBlur=6;ctx.strokeStyle='#eaffff';ctx.lineWidth=1.5;ctx.stroke();}ctx.shadowBlur=0;
  }
 }
+
