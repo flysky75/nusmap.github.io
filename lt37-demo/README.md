@@ -1,9 +1,13 @@
-# LT37 shared-partition indoor demo
+# LT37 supplied-plan trace
 
-Open: https://flysky75.github.io/nusmap.github.io/lt37-demo/
+This updates only the separate `lt37-demo` path; the main map under `dist/` is unchanged.
 
-Select Explore floors · Demo to enter the LT37 sample interior. Adjoining rooms share partition walls and corridor-facing door openings. Click a room marker to see a simulated temperature. L1–L3 are available using the floor selector.
+Published demo: https://flysky75.github.io/nusmap.github.io/lt37-demo/?indoor=1&room=trace-0
 
-Floor plans, furnishings and temperatures are illustrative demo data, not surveyed NUS plans or live sensor readings. This separate version preserves the existing map at dist/index.html.
+Wall comparison: https://flysky75.github.io/nusmap.github.io/lt37-demo/compare.html
 
-The editable indoor layout and styles are indoor-map.js and indoor-map.css. Modified Streets GL TypeScript files are included in engine-patches; the compiled engine is in streets/js. Static asset paths are relative for GitHub Pages hosting.
+Walls are manually traced in the source image's pixel coordinates in dist/traced-plan.json. The outer stepped boundary, major partitions, door gaps, stair cores, lifts and escalator linework follow the user-supplied floorplan.png. trace-overlay.svg overlays the wall trace in red on the original image for comparison.
+
+No dimensions or georeferencing were supplied: physical scale, alignment on the map, room labels and temperatures are illustrative. The single supplied drawing is reused for the demo floor levels and does not establish their actual layouts. Generic furniture is omitted to keep the traced partitions clear.
+
+The edited renderer source is included in `engine-patches/NUSIndoor.ts`.

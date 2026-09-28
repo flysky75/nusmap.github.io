@@ -22,3 +22,5 @@
 .indoors .indoor-pin:hover span,.indoors .indoor-pin:focus-visible span,.indoors .indoor-pin[aria-pressed=true] span{display:block}
 
 .room-temperature{margin-top:16px;padding-top:14px;border-top:1px solid #8ee8eb44}.room-temperature>span{font-size:12px;color:#d7f1f2}.room-temperature small{float:right;font-size:9px;color:#49ffe0;border:1px solid #49ffe088;border-radius:4px;padding:2px 4px}.room-temperature>div{margin:10px 0;color:#f0ffff;font-size:20px}.room-temperature b{font-size:34px;font-weight:600}.room-temperature p{font-size:10px!important;line-height:1.5}
+/* Small pointers leave the traced wall lines visible in dense service areas. */
+.indoors .indoor-pin{width:17px;height:17px;padding:2px}.indoors .indoor-pin svg{width:11px;height:11px}.indoors .indoor-pin span{top:20px}.indoors .indoor-pin[aria-pressed=true]{width:24px;height:24px}
