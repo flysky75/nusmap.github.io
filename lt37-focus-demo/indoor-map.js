@@ -1,0 +1,32 @@
+let indoorActive=false,activeFloor=0,ltBuilding,ltPlace;const indoorPins=new Map();
+const toolbar=document.createElement('section');toolbar.id='indoor-toolbar';toolbar.hidden=true;toolbar.setAttribute('aria-label','LT37 indoor demo');toolbar.innerHTML='<div class="indoor-tag">LT37 · INDOOR DEMO</div><h2>Lecture Theatre 37</h2><p id="indoor-floor-title"></p><button id="exit-indoor">← Back to campus</button><div id="indoor-room-info" aria-live="polite"><strong>Select an indoor marker</strong><p>Explore the sample rooms and facilities.</p></div><p style="font-size:11px">Walls traced from your supplied plan. Map scale and temperatures are illustrative.</p>';
+document.querySelector('#map-shell').append(toolbar);
+const levels=document.createElement('nav');levels.id='indoor-levels';levels.hidden=true;levels.setAttribute('aria-label','Building floors');levels.innerHTML='<button id="floor-up" aria-label="Go up one floor">⌃</button><output id="current-floor" aria-live="polite">L1</output><button id="floor-down" aria-label="Go down one floor">⌄</button>';document.querySelector('#map-shell').append(levels);
+const roomIcons={teach:'<path d="M3 4h18v12H3zM7 21l5-5 5 5M8 8h8"/>',stairs:'<path d="M3 21h5v-6h5V9h5V3h3"/>',lift:'<rect x="3" y="2" width="18" height="20" rx="2"/><path d="m7 9 2-3 2 3m2 6 2 3 2-3M9 6v12m6-12v12"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 10v7m0-11v1"/>',amenity:'<path d="M6 3v7m-3 0h6m-3 0v11M18 3v18m-3-13h6"/>'};
+const floorNames=['Arrival & lecture spaces','Teaching & tutorials','Study & collaboration'];
+let tracedPlan;
+function makePlan(){
+ const origin=[ltBuilding.properties.lng,ltBuilding.properties.lat],scale=.079,angle=-20*Math.PI/180,c=Math.cos(angle),s=Math.sin(angle);
+ const ll=p=>{const x=(p[0]-770)*scale,y=(485-p[1])*scale;return[origin[0]+(x*c-y*s)/111290,origin[1]+(x*s+y*c)/111319]};
+ const rooms=tracedPlan.rooms.map((r,i)=>{const [x,y,X,Y]=r.bounds,key='trace-'+i,temperature=(22+((i*17+activeFloor*13)%57)/10).toFixed(1);return {key,name:r.name,kind:r.kind,temperature,center:ll([(x+X)/2,(y+Y)/2]),ring:[[x,y],[X,y],[X,Y],[x,Y]].map(ll)};});
+ return {id:141912739,floor:activeFloor,center:origin,ring:tracedPlan.outline.map(ll),walls:tracedPlan.lines.map(e=>e.map(ll)),details:tracedPlan.details.map(e=>e.map(ll)),rooms,traced:true};
+}
+
+function updateIndoor(){const plan=makePlan();for(const pin of indoorPins.values())pin.remove();indoorPins.clear();for(const room of plan.rooms){const b=document.createElement('button');b.className='indoor-pin';b.setAttribute('aria-label',room.name+' · L'+(activeFloor+1));b.setAttribute('aria-pressed','false');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">'+roomIcons[room.kind]+'</svg><span>'+room.name+'</span>';b.onclick=()=>{for(const p of indoorPins.values())p.setAttribute('aria-pressed',p===b);document.querySelector('#indoor-room-info').innerHTML='<strong>'+room.name+'</strong><p>L'+(activeFloor+1)+' · Sample '+(room.kind==='teach'?'learning space':'facility')+'. Demo layout only.</p><div class="room-temperature"><span>Room temperature <small>DEMO</small></span><div><b>'+room.temperature+'</b> °C</div><p>Simulated reading · No live sensor connected</p></div>'};document.querySelector('#map').append(b);indoorPins.set(room.key,b)}map.frame.contentWindow.__nusIndoorSink=points=>{if(!indoorActive)return;for(const p of points){const b=indoorPins.get(p.id);if(b){b.style.display=p.visible?'grid':'none';b.style.transform=`translate3d(${p.x}px,${p.y}px,0) translate(-50%,-50%)`}}};map.send({action:'indoor',plan});document.querySelector('#current-floor').textContent='L'+(activeFloor+1);document.querySelector('#indoor-floor-title').textContent='L'+(activeFloor+1)+' · '+floorNames[activeFloor];document.querySelector('#floor-up').disabled=activeFloor===2;document.querySelector('#floor-down').disabled=activeFloor===0;document.querySelector('#indoor-room-info').innerHTML='<strong>'+plan.rooms.length+' sample rooms</strong><p>Select a room to see its temperature.</p>';}
+function enterIndoor(){if(!ltBuilding||!tracedPlan)return;closeSearch();indoorActive=true;activeFloor=0;document.body.classList.add('indoors');toolbar.hidden=levels.hidden=false;document.querySelector('#detail').hidden=true;updateIndoor();map.send({action:'camera',lat:ltBuilding.properties.lat,lng:ltBuilding.properties.lng-.0001,pitch:65,bearing:12,distance:125});}
+function exitIndoor(){indoorActive=false;document.body.classList.remove('indoors');toolbar.hidden=levels.hidden=true;map.send({action:'indoor',plan:null});for(const b of indoorPins.values())b.remove();indoorPins.clear();map.frame.contentWindow.__nusIndoorSink=null;map.flyTo({center:[ltPlace.lng,ltPlace.lat],zoom:17,pitch:48});}
+document.querySelector('#exit-indoor').onclick=exitIndoor;document.querySelector('#floor-up').onclick=()=>{if(activeFloor<2){activeFloor++;updateIndoor()}};document.querySelector('#floor-down').onclick=()=>{if(activeFloor>0){activeFloor--;updateIndoor()}};
+const originalShowPlace=showPlace;showPlace=function(p){if(indoorActive)exitIndoor();originalShowPlace(p);if(p.id===ltPlace?.id||(ltPlace?.buildingId&&p.buildingId===ltPlace.buildingId)){const b=document.createElement('button');b.id='lt37-open';b.textContent='Explore floors · Demo';b.onclick=enterIndoor;document.querySelector('#detail').append(b)}};
+const outsideBuilding=map.onBuilding;map.onBuilding=(...args)=>{if(!indoorActive)outsideBuilding(...args)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&indoorActive)exitIndoor()});essentials.push('Lecture Theatre 37');
+Promise.all([campusReady,fetch("traced-plan.json").then(r=>r.json()).then(p=>tracedPlan=p)]).then(()=>{ltPlace=places.find(p=>p.id==='lecture-theatre-37');ltBuilding=buildingData.features.find(b=>b.properties.id===ltPlace.buildingId);showPlace(ltPlace);render()});
+
+
+// Optional shareable indoor-room preview; ordinary entry still uses the Explore button.
+if(new URLSearchParams(location.search).has('indoor')){
+ Promise.all([campusReady,fetch("traced-plan.json").then(r=>r.json()).then(p=>tracedPlan=p)]).then(()=>{
+  const openLinkedRoom=()=>{enterIndoor();const key=new URLSearchParams(location.search).get('room');if(key)indoorPins.get(key)?.click();};
+  if(map.ready)openLinkedRoom();else{const ready=map.onReady;map.onReady=()=>{ready?.();openLinkedRoom();};}
+ });
+}
+

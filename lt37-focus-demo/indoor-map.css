@@ -1,0 +1,32 @@
+#lt37-open{display:block;width:100%;margin-top:18px;padding:13px;border:1px solid #32d9eb;border-radius:10px;background:linear-gradient(120deg,#075cb4,#063449);color:#e6ffff;font:600 14px inherit;cursor:pointer}
+#indoor-toolbar{position:absolute;left:24px;bottom:90px;z-index:8;width:280px;padding:18px;border:1px solid #35b7dd;border-radius:15px;background:linear-gradient(130deg,#0b3759ec,#061b30eb);backdrop-filter:blur(18px);box-shadow:0 8px 35px #00101c77;color:#d9f4ff}#indoor-toolbar h2{font-size:18px;margin:8px 0}#indoor-toolbar p{font-size:13px;line-height:1.5;color:#b1ccde;margin:8px 0}.indoor-tag{font-size:11px;letter-spacing:1.4px;color:#45eedf}#exit-indoor{padding:9px 13px;border:1px solid #2b92b6;border-radius:8px;background:#103c59;color:#e1f8ff;cursor:pointer}#indoor-room-info{padding-top:12px;border-top:1px solid #33718a;margin-top:12px}#indoor-room-info strong{font-size:15px}#indoor-room-info p{margin-bottom:0}
+#indoor-levels{position:absolute;right:25px;top:35%;z-index:9;display:flex;flex-direction:column;align-items:center;border:1px solid #34c6ed;border-radius:22px;background:#082b46ee;box-shadow:0 0 16px #00bfff33;backdrop-filter:blur(15px);color:#dcfaff;overflow:hidden}#indoor-levels button{width:46px;height:38px;border:0;background:transparent;color:#b1efff;cursor:pointer;font-size:23px}#indoor-levels button:disabled{opacity:.25;cursor:default}#indoor-levels output{font-size:18px;font-weight:700;padding:8px 0;min-width:46px;text-align:center}
+.indoor-pin{position:absolute;left:0;top:0;z-index:7;border:2px solid #ccffff;border-radius:50%;background:#087e91;color:white;width:30px;height:30px;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px #00192488;padding:5px}.indoor-pin svg{width:17px;height:17px}.indoor-pin span{position:absolute;top:31px;white-space:nowrap;font-size:11px;font-weight:600;background:#062c42e8;border:1px solid #38a8b4;padding:3px 6px;border-radius:5px;color:#e3ffff;pointer-events:none}.indoor-pin[aria-pressed=true]{background:#25ddcc;color:#003d48;box-shadow:0 0 0 5px #30eee43b}.indoors .maplibregl-marker{visibility:hidden}.indoors #detail{display:none!important}@media(max-width:700px){#indoor-toolbar{left:12px;bottom:82px;width:225px;padding:13px}#indoor-levels{right:14px;top:29%}.indoor-pin span{font-size:10px}#indoor-toolbar p{font-size:12px}}
+/* Frosted controls apply only while exploring the indoor demo. */
+.indoors #indoor-toolbar,.indoors #indoor-levels,.indoors .energy-badge,.indoors .campus-switch,.indoors .view-switch,.indoors .searchbox,.indoors #search-panel,.indoors .map-tools>button,.indoors .map-tools>div,.indoors .about-map{
+ background:linear-gradient(135deg,rgba(44,100,119,.70),rgba(9,39,52,.73) 52%,rgba(30,77,65,.67))!important;
+ -webkit-backdrop-filter:blur(24px) saturate(145%);backdrop-filter:blur(24px) saturate(145%);
+ border:1px solid rgba(100,222,247,.65)!important;
+ box-shadow:inset 0 1px 0 rgba(225,252,255,.34),inset 0 0 25px rgba(126,231,240,.07),0 12px 35px rgba(2,34,45,.22)!important;
+}
+.indoors #indoor-toolbar{background:linear-gradient(140deg,rgba(48,110,131,.72),rgba(10,40,51,.78) 52%,rgba(29,81,66,.70))!important;}
+.indoors #indoor-room-info{background:rgba(0,27,44,.30);border:1px solid rgba(72,205,230,.42);border-radius:12px;padding:14px;box-shadow:inset 0 1px 12px rgba(0,25,40,.12)}
+.indoors #exit-indoor{background:linear-gradient(120deg,rgba(0,134,225,.52),rgba(0,62,91,.42));border-color:rgba(81,219,241,.7);box-shadow:inset 0 1px 0 #d9ffff20}
+.indoors .map-tools button,.indoors #indoor-levels button{background:transparent!important}
+
+/* Compact pointers keep the denser floor layout readable. */
+.indoors .indoor-pin{width:23px;height:23px;padding:3px;border-width:1px}
+.indoors .indoor-pin svg{width:14px;height:14px}
+.indoors .indoor-pin span{display:none;top:25px}
+.indoors .indoor-pin:hover,.indoors .indoor-pin:focus-visible,.indoors .indoor-pin[aria-pressed=true]{z-index:10}
+.indoors .indoor-pin:hover span,.indoors .indoor-pin:focus-visible span,.indoors .indoor-pin[aria-pressed=true] span{display:block}
+
+.room-temperature{margin-top:16px;padding-top:14px;border-top:1px solid #8ee8eb44}.room-temperature>span{font-size:12px;color:#d7f1f2}.room-temperature small{float:right;font-size:9px;color:#49ffe0;border:1px solid #49ffe088;border-radius:4px;padding:2px 4px}.room-temperature>div{margin:10px 0;color:#f0ffff;font-size:20px}.room-temperature b{font-size:34px;font-weight:600}.room-temperature p{font-size:10px!important;line-height:1.5}
+/* Small pointers leave the traced wall lines visible in dense service areas. */
+.indoors .indoor-pin span{display:block!important;white-space:normal;width:52px;font-size:9px;line-height:1.15;text-align:center;padding:2px 3px;pointer-events:none}
+.indoors .indoor-pin:nth-child(even) span{top:auto;bottom:20px}
+#map-status:not(:empty){min-width:240px;padding:15px 20px;border:1px solid #3fdcf580;background:#08283cdb;backdrop-filter:blur(18px);box-shadow:0 8px 30px #00152366}
+#map-status:not(:empty)::after{content:"";display:block;height:5px;margin-top:12px;border-radius:8px;background:linear-gradient(90deg,#16465a 0%,#16465a 25%,#20e6ed 45%,#2189ff 55%,#16465a 75%,#16465a 100%);background-size:250% 100%;animation:campus-loading 1.6s linear infinite}
+@keyframes campus-loading{from{background-position:130% 0}to{background-position:-30% 0}}
+@media(prefers-reduced-motion:reduce){#map-status:not(:empty)::after{animation:none;background-position:50% 0}}
+.indoors .indoor-pin{width:17px;height:17px;padding:2px}.indoors .indoor-pin svg{width:11px;height:11px}.indoors .indoor-pin span{top:20px}.indoors .indoor-pin[aria-pressed=true]{width:24px;height:24px}
